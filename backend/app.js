@@ -16,9 +16,9 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use('/user' , userRoutes);
 app.use("/project" , projectRoutes);
-app.use(cookieParser());
 
 const PORT = process.env.PORT || 3000;
 

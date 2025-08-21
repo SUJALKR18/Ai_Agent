@@ -4,6 +4,7 @@ const {
   ProjectController,
   getAllProjects,
   addUserToProject,
+  getProject
 } = require("../controllers/projectController");
 const { isLoggedin } = require("../middlewares/isLoggedin");
 
@@ -31,5 +32,7 @@ router.put(
         .withMessage("Each user must be a string"),
     addUserToProject
 );
+
+router.get("/get-project/:projectId" , isLoggedin, getProject);
 
 module.exports = router;

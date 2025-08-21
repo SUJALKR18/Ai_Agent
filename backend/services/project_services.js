@@ -82,3 +82,23 @@ module.exports.addUsers = async (projectId , users , userId) => {
     throw new Error ("Internal server error");
   }
 } 
+
+module.exports.getProjectDetails = async (projectId) => {
+  if(!projectId){
+    throw new Error ("ProjectId is required");
+  }
+  if(!mongoose.Types.ObjectId.isValid(projectId)){
+    throw new Error ("Invalid Project Id");
+  }
+  try{
+    const project = await projectModel.findOne({_id : projectId}).populate('users');
+    if(!(project)){
+      throw new Error ("No Project with such Id exists");
+    }
+    return project;
+  }
+  catch(err){
+    console.log(err);
+    throw new Error("Internal server error");
+  }
+}

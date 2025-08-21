@@ -1,7 +1,9 @@
 const projectModel = require("../models/project_model");
 const {
   createProject,
-  getAllProjectsByUserId,addUsers
+  getAllProjectsByUserId,
+  addUsers,
+  getProjectDetails,
 } = require("../services/project_services");
 const { validationResult } = require("express-validator");
 const userModel = require("../models/user_model");
@@ -43,28 +45,45 @@ module.exports.getAllProjects = async (req, res) => {
     const user = await userModel.findOne({ email: req.user.email });
     const allUserProjects = await getAllProjectsByUserId(user._id);
     return res.status(201).json({ projects: allUserProjects });
-  } 
-  catch (err) {
+  } catch (err) {
     console.log(err);
     res.status(400).json({ error: err.message });
   }
 };
 
-module.exports.addUserToProject = async (req ,res) => {
+module.exports.addUserToProject = async (req, res) => {
   const errors = validationResult(req);
 
-  if(!errors.isEmpty()){
-    return res.status(401).json({errors : errors.array()});
+  if (!errors.isEmpty()) {
+    return res.status(401).json({ errors: errors.array() });
   }
 
-  try{
-    const {users , projectId} = req.body;
-    const loggedUser = await userModel.findOne({email : req.user.email});
+  try {
+    const { users, projectId } = req.body;
+    const loggedUser = await userModel.findOne({ email: req.user.email });
     const project = await addUsers(projectId, users, loggedUser._id);
-    return res.status(200).json({project})
-  }
-  catch(err){
+    return res.status(200).json({ project });
+  } catch (err) {
     console.log(err);
-    res.status(400).json({error : err.message});
+    res.status(400).json({ error: err.message });
   }
-}
+};
+
+module.exports.getProject = async (req, res) => {
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+    return res.status(401).json({ error: error.array });
+  }
+
+  try {
+    const projectId = req.params.projectId;
+    const project = await getProjectDetails(projectId);
+    if (!project) {
+      return res.status(401).send("Project Not Found");
+    }
+    return res.status(201).json({ project: project });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ error: err.message });
+  }
+};
